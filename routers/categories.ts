@@ -8,7 +8,7 @@ const categoriesRouter = express.Router();
 
 categoriesRouter.get("/", async (_req, res, next) => {
   try {
-    const result = await mysqlDb.getConnection().query("SELECT * FROM category");
+    const result = await mysqlDb.getConnection().query("SELECT id, name FROM category");
     const category: Category[] = result[0] as Category[];
     return res.send(category);
   } catch (e) {

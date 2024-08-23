@@ -8,7 +8,7 @@ const locationRouter = express.Router();
 
 locationRouter.get("/", async (_req, res, next) => {
   try {
-    const result = await mysqlDb.getConnection().query("SELECT * FROM location");
+    const result = await mysqlDb.getConnection().query("SELECT id, name FROM location");
     const category: Location[] = result[0] as Location[];
     return res.send(category);
   } catch (e) {
