@@ -27,3 +27,14 @@ export interface CategoryMutation {
   name: string;
   description: string | null;
 }
+
+export interface Location {
+  id: number;
+  name: string;
+  description: string | null;
+}
+
+export interface LocationMutation {
+  name: string;
+  description: string | null;
+}
