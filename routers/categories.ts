@@ -83,4 +83,76 @@ categoriesRouter.post('/', async (req, res) => {
   }
 });
 
+categoriesRouter.put('/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).send({ error: 'Invalid category ID' });
+  }
+
+  if (!req.body.name) {
+    return res.status(400).send({ error: 'Name is required!' });
+  }
+
+  const categoryMutation: CategoryMutation = {
+    name: req.body.name,
+    description: req.body.description || null,
+  };
+
+  try {
+    const connection = mysqlDb.getConnection();
+
+    const [updateResult] = await connection.query<ResultSetHeader>(
+      'UPDATE category SET name = ?, description = ? WHERE id = ?',
+      [categoryMutation.name, categoryMutation.description, id]
+    );
+
+    if (updateResult.affectedRows === 0) {
+      return res.status(404).send({ error: 'Category not found!' });
+    }
+
+    const [getUpdatedResult] = await connection.query<RowDataPacket[]>(
+      'SELECT * FROM category WHERE id = ?',
+      [id]
+    );
+
+    const category = getUpdatedResult as Category[];
+
+    if (category.length === 0) {
+      return res.status(404).send({ error: 'Category not found!' });
+    }
+
+    return res.send(category[0]);
+  } catch (error) {
+    console.error('Error operation:', error);
+    return res.status(500).send({ error: 'Internal Server Error' });
+  }
+});
+
+categoriesRouter.delete('/:id', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    return res.status(400).send({ error: 'Invalid category ID' });
+  }
+
+  try {
+    const connection = mysqlDb.getConnection();
+
+    const [deleteResult] = await connection.query<ResultSetHeader>(
+      'DELETE FROM category WHERE id = ?',
+      [id]
+    );
+
+    if (deleteResult.affectedRows === 0) {
+      return res.status(404).send({ error: 'Category not found!' });
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    console.error('Error operation:', error);
+    return res.status(500).send({ error: 'Internal Server Error' });
+  }
+});
+
 export default categoriesRouter;
