@@ -12,7 +12,7 @@ export interface ProductMutation {
   name: string;
   category_id: number;
   location_id: number;
-  description: string;
+  description: string | null;
   photo: string | null;
   date:string;
 }
